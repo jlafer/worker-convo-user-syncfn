@@ -26,12 +26,18 @@ exports.handler = async function(context, event, callback) {
   try {
     console.log(`reading user with identity = -${encodedName}-`);
     const user = await client.conversations.v1.users(encodedName).fetch();
-    console.log(`read user ${user.friendlyName}`);
-    await client.conversations.v1.users(user.sid)
+    const {sid, friendlyName, attributes} = user;
+    const userAttributes = JSON.parse(attributes);
+    console.log(`read user ${friendlyName}`);
+    if (userAttributes.gravatar_url === image_url) {
+      console.log(`INFO: not updating User because gravatar URL is unchanged`);
+      return callback(null, response);
+    }
+    await client.conversations.v1.users(sid)
       .update({
         attributes: JSON.stringify({gravatar_url: image_url})
       });
-      console.log(`updated gravatar_url to ${image_url} for ${user.friendlyName}`);
+      console.log(`updated gravatar_url to ${image_url} for ${friendlyName}`);
       callback(null, response);
   }
   catch (err) {
