@@ -39,7 +39,7 @@ exports.handler = async function(context, event, callback) {
       console.log(`INFO: User ${WorkerName} not found; will create`);
       await client.conversations.v1.users.create({
         identity: encodedName,
-        fullName: full_name,
+        friendlyName: full_name,
         attributes: JSON.stringify({gravatar_url: image_url})
       })
       callback(null, response);
